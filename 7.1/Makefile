@@ -1,6 +1,6 @@
 -include env_make
 
-VERSION ?= 5.6
+VERSION ?= 7.1
 
 REPO = wodby/drupal-php
 NAME = drupal-php-$(VERSION)

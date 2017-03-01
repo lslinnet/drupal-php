@@ -1,30 +1,29 @@
 -include env_make
 
-NS = wodby
 VERSION ?= 7.0
 
-REPO = drupal-php
-NAME = drupal-php
+REPO = wodby/drupal-php
+NAME = drupal-php-$(VERSION)
 
-.PHONY: build test push shell run start stop logs rm release
+.PHONY: build test push shell run start stop logs clean release
 
 build:
-	docker build -t $(NS)/$(REPO):$(VERSION) ./
+	docker build -t $(REPO):$(VERSION) ./
 
 test:
-	echo Ok
+	NAME=$(NAME) ./test.sh
 
 push:
-	docker push $(NS)/$(REPO):$(VERSION)
+	docker push $(REPO):$(VERSION)
 
 shell:
-	docker run --rm --name $(NAME) -i -t $(PORTS) $(VOLUMES) $(ENV) $(NS)/$(REPO):$(VERSION) /bin/bash
+	docker run --rm --name $(NAME) -i -t $(PORTS) $(VOLUMES) $(ENV) $(REPO):$(VERSION) /bin/bash
 
 run:
-	docker run --rm --name $(NAME) $(PORTS) $(VOLUMES) $(ENV) $(NS)/$(REPO):$(VERSION)
+	docker run --rm --name $(NAME) $(PORTS) $(VOLUMES) $(ENV) $(REPO):$(VERSION) $(CMD)
 
 start:
-	docker run -d --name $(NAME) $(PORTS) $(VOLUMES) $(ENV) $(NS)/$(REPO):$(VERSION)
+	docker run -d --name $(NAME) $(PORTS) $(VOLUMES) $(ENV) $(REPO):$(VERSION)
 
 stop:
 	docker stop $(NAME)
@@ -32,8 +31,8 @@ stop:
 logs:
 	docker logs $(NAME)
 
-rm:
-	docker rm $(NAME)
+clean:
+	-docker rm -f $(NAME)
 
 release: build
 	make push -e VERSION=$(VERSION)
